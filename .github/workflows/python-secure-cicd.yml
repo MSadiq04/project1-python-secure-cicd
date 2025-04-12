@@ -55,7 +55,7 @@ jobs:
     - name: Scan Docker image with Trivy
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: msadiq04/python-secure-app:latest
+        image-ref: ${{ secrets.DOCKER_USERNAME }}/python-secure-app:latest
         format: 'table'  # Output format (table, json, etc.)
         severity: 'HIGH,CRITICAL'  # Focus on HIGH and CRITICAL vulnerabilities
 
