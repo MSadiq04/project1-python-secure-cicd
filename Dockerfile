@@ -13,5 +13,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Expose port
 EXPOSE 5000
 
+# Create a non-root user and switch to it
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
 # Run the app
 CMD ["python", "app.py"]
+
