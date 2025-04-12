@@ -8,23 +8,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Checkout code from GitHub
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    # Step 2: Set up Python environment
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
+    # Step 3: Install dependencies
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install bandit semgrep
 
+    # Step 4: Build Docker image
+    - name: Build Docker image
+      run: |
+        docker build -t python-secure-app .
+
+    # Step 5: Run Bandit for static code analysis
     - name: Run Security Scan (Bandit)
       run: bandit -r .
 
+    # Step 6: Run Semgrep for security checks
+    - name: Run Semgrep security scan
+      run: semgrep scan --config=auto
+
+    # Step 7: Run Trivy Docker image scan for vulnerabilities
+    - name: Scan Docker image with Trivy
+      uses: aquasecurity/trivy-action@v0.1.0
+      with:
+        image-ref: python-secure-app:latest
+        format: 'table'  # Output format (table, json, etc.)
+        severity: 'HIGH,CRITICAL'  # Focus on HIGH and CRITICAL vulnerabilities
+
+    # Step 8: Run Tests
     - name: Run Tests
       run: |
         if [ -f test_app.py ]; then
@@ -33,5 +55,3 @@ jobs:
           echo "No tests found"
         fi
 
-    - name: Run Semgrep security scan
-      run: semgrep scan --config=auto

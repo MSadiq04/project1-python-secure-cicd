@@ -1,22 +1,18 @@
-# Use official Python image
+# Use official Python image as base
 FROM python:3.11-slim
 
-# Set working directory
+# Set working directory in container
 WORKDIR /app
 
-# Copy project files
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy app code to container
 COPY . .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Expose port
+# Expose port (Flask default)
 EXPOSE 5000
-
-# Create a non-root user and switch to it
-RUN adduser --disabled-password --gecos '' appuser
-USER appuser
 
 # Run the app
 CMD ["python", "app.py"]
-
