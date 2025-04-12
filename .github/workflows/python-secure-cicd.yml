@@ -1,0 +1,35 @@
+name: Python CI/CD with Security Check
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install bandit
+
+    - name: Run Security Scan (Bandit)
+      run: bandit -r .
+
+    - name: Run Tests
+      run: |
+        if [ -f test_app.py ]; then
+          python test_app.py
+        else
+          echo "No tests found"
+        fi
+
